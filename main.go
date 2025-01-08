@@ -48,10 +48,14 @@ func (s *Server) Start() error {
 
 	go s.loop()
 
-	slog.Info("Listening on", s.Config.ListenAddr)
+	//slog.Info("Listening on", s.Config.ListenAddr)
 			
-	return s.acceptLoop()
-	
+	return s.acceptLoop()	
+}
+
+func (s *Server) handleRawmsg(rawMsg []byte) error {
+	fmt.Println(string(rawMsg))
+	return nil
 }
 
 
@@ -59,6 +63,9 @@ func (s *Server) loop() {
 	for {
 		select {
 		case Rawmsg := <-s.msgCh:
+			if err := s.handleRawmsg(Rawmsg); err != nil {
+			slog.Info("raw message error", "err", err)
+			}
 			fmt.Println("msg received", (Rawmsg))
 			
 		case <-s.quitCh:
